@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 @click.command()
-@click.option("--server-id")
-@click.option("--playlist-id")
+@click.option("--server-id", default="689619583841337505")
+@click.option("--playlist-id", default="1o1LieydFE80e9PoCMBmt0")
 def sync_discord_spotify_links_to_playlist(server_id: str, playlist_id: str):
     # TODO: Allow date range, using DISCORD_EPOCH.
     logger.info("Retrieving messages with Spotify links from Discord...")
@@ -20,10 +20,13 @@ def sync_discord_spotify_links_to_playlist(server_id: str, playlist_id: str):
     logger.info(f"{len(discord_messages)} possibly relevant messages retrieved.")
     logger.info("Extracting URIs from Discord messages...")
     api = SpotifyApi()
-    spotify_uris_from_discord = [
-        get_uri_from_discord_message(discord_message, api)
-        for discord_message in discord_messages
-    ]
+    spotify_uris_from_discord = []
+    for discord_message in discord_messages:
+        try:
+            uri = get_uri_from_discord_message(discord_message, api)
+            spotify_uris_from_discord.append(uri)
+        except:
+            logger.warning(f'Could not parse {discord_message}.')
 
     logger.info(f"{len(spotify_uris_from_discord)} Spotify URIs extracted.")
     logger.info(f"Retrieving existing tracks from playlist {playlist_id}...")

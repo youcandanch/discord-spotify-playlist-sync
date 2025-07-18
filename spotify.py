@@ -19,10 +19,10 @@ class SpotifyApi:
             base_url="https://api.spotify.com/v1",
             headers={"Authorization": f"Bearer {bearer_token}"},
         )
+        # TODO: https://will-ockmore.github.io/httpx-retries/
 
     def _get(self, path, params={}) -> dict:
         response = self.client.get(path, params=params)
-        response.raise_for_status()
         return response.json()
 
     def _post(self, path: str, data: dict) -> dict:
